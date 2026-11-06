@@ -80,13 +80,14 @@
     .lightbox{background:transparent}.lightbox button{cursor:pointer;color:var(--ink)}
     @media(hover:hover) and (pointer:fine){.card:hover{transform:translateY(-1px);box-shadow:3px 5px 0 #24398a16}}
     @media(max-width:600px){body{padding:24px 16px 48px 24px}main::before{left:-13px}.topline{gap:12px}h1{font-size:2.5rem}.bar{gap:8px}.btn{padding:8px 11px}.count{flex-basis:100%;margin-left:0}.hint{display:none}.section-row h2{font-size:1.8rem}.head{padding:14px 52px 14px 16px}.term{font-size:1.5rem}.body{padding:0 16px}.star{right:7px}.legend{font-size:.83rem}}
+    .bar a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
   </style>
 </head>
 <body>
 <main>
   <div class="topline"><div class="title-wrap"><h1 id="database-title">Карточки</h1><p class="sub" id="database-description"></p></div><button class="settings" id="settings" type="button" aria-label="Включить режим редактирования" title="Режим редактирования">⚙</button></div>
   <div class="edit-panel" id="edit-panel"><p><b>Режим редактирования включён.</b> Изменения сохраняются локально в этом браузере и не отправляются в удалённую базу.</p><div class="edit-tools"><button class="btn" id="edit-base" type="button">Изменить название базы</button><button class="btn" id="add-section" type="button">Добавить раздел</button><button class="btn danger" id="clear-draft" type="button">Отменить локальные изменения</button></div></div>
-  <div class="bar"><button class="btn" id="all" type="button">Показать все</button><button class="btn" id="shuffle" type="button">Перемешать</button><button class="btn" id="favorites-filter" type="button" aria-pressed="false" title="Показать только избранные карточки">★ Избранное</button><button class="btn" id="reset" type="button">Сбросить отметки</button><span class="count" id="count"></span></div>
+  <div class="bar"><button class="btn" id="all" type="button">Показать все</button><button class="btn" id="shuffle" type="button">Перемешать</button><button class="btn" id="favorites-filter" type="button" aria-pressed="false" title="Показать только избранные карточки">★ Избранное</button><a class="btn game-link" href="game.html">Мини-игра →</a><button class="btn" id="reset" type="button">Сбросить отметки</button><span class="count" id="count"></span></div>
   <div class="legend" id="legend"><span><i class="dot def"></i>определение</span><span><i class="dot thm"></i>теорема / доказательство</span><span><i class="dot ax"></i>аксиома</span></div><div id="root" aria-live="polite"></div>
 </main>
 <dialog id="editor"><form id="editor-form"><div class="modal-head"><h3 id="editor-title">Редактирование</h3><button class="icon-close" type="button" data-close="editor" aria-label="Закрыть">×</button></div><div class="modal-body" id="editor-fields"></div><div class="modal-actions"><button class="btn" type="submit">Сохранить</button><button class="btn danger hidden" id="delete-item" type="button">Удалить</button><button class="btn" type="button" data-close="editor">Отмена</button></div></form></dialog>

@@ -1,0 +1,1942 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#eef0e6">
+  <title>mathAnal: Коллоквиум — мини-игра</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+  <style>
+    :root {
+      --paper: #eef0e6;
+      --grid: #bdcfd3;
+      --ink: #24398a;
+      --red: #ae2934;
+      --text: #202735;
+      --card: #fffef5;
+      --line: #91a6b3;
+      --done: #dcebd5;
+      --def: #28663e;
+      --thm: #99501d;
+      --ax: #70418e;
+      --type-color: var(--ink);
+      --shadow: 2px 3px 0 #24398a12;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 28px 20px 48px;
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: var(--text);
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button { font: inherit; cursor: pointer; }
+    a { color: var(--ink); }
+    :focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+
+    .game {
+      position: relative;
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .game::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      bottom: -24px;
+      left: -18px;
+      width: 3px;
+      border-left: 1px solid #bc4a5270;
+      border-right: 1px solid #bc4a5240;
+      pointer-events: none;
+    }
+
+    .topline {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      padding: 0 0 14px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid #24398a55;
+    }
+    .title-wrap { flex: 1; min-width: 0; }
+    h1 {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Marck Script", "Segoe Script", cursive;
+      font-weight: 400;
+      font-size: 2.8rem;
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+    h1 .sep { color: var(--line); font-size: 1.6rem; }
+    h1 .subtitle { color: var(--red); font-size: 1.6rem; }
+    .sub {
+      margin: 6px 0 0;
+      color: #354156;
+      font-size: .95rem;
+      line-height: 1.6;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: var(--card);
+      color: var(--ink);
+      border: 1.5px solid var(--ink);
+      border-radius: 5px;
+      box-shadow: 1px 2px 0 #24398a12;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color .2s, color .2s, border-color .2s, transform .15s;
+    }
+    .btn:hover:not(:disabled) { background: var(--ink); color: var(--card); }
+    .btn:active:not(:disabled) { transform: scale(.97); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .back-link { flex: 0 0 auto; font-size: .9rem; }
+    .back-link:hover { color: var(--card); }
+
+    .top-panel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 20px;
+      padding: 10px 16px;
+      background: rgba(255, 254, 245, .84);
+      border: 1.5px solid var(--ink);
+      border-radius: 5px;
+      box-shadow: var(--shadow);
+    }
+    .lives {
+      flex: 0 0 auto;
+      color: var(--red);
+      font-size: 1.25rem;
+      line-height: 1;
+      letter-spacing: 6px;
+    }
+    .lives .heart { display: inline-block; }
+    .lives .heart.off { color: var(--line); }
+    .progress-info {
+      flex: 1 1 auto;
+      color: var(--ink);
+      font-size: .95rem;
+      font-weight: 600;
+    }
+    .right-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-left: auto;
+    }
+    .score-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+    }
+    .score, .pass-count {
+      color: #26396b;
+      font-size: .92rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .score b { color: var(--red); }
+    .pass-count b { color: var(--def); }
+    .icon-btn {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card);
+      color: var(--ink);
+      border: 1.5px solid var(--ink);
+      border-radius: 50%;
+      font-size: 1rem;
+      line-height: 1;
+      transition: background-color .2s, color .2s, transform .15s;
+    }
+    .icon-btn:hover { background: var(--ink); color: var(--card); }
+    .icon-btn:active { transform: scale(.96); }
+
+    .progress-bar {
+      height: 5px;
+      margin: 10px 0 16px;
+      overflow: hidden;
+      background: rgba(36, 57, 138, .12);
+      border-radius: 3px;
+    }
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--ink), var(--red));
+      border-radius: 3px;
+      transition: width .35s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .deck {
+      position: relative;
+      width: 100%;
+      height: clamp(400px, 60vh, 590px);
+      height: clamp(400px, 60dvh, 590px);
+      margin: 0 auto 14px;
+      perspective: 1600px;
+    }
+
+    .swipe-indicator {
+      position: absolute;
+      top: 50%;
+      z-index: 20;
+      padding: 8px 14px;
+      background: var(--card);
+      border: 1.5px solid;
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+      font-size: .95rem;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-50%);
+      transition: opacity .15s ease;
+    }
+    .swipe-left { left: 6px; color: var(--red); border-color: var(--red); }
+    .swipe-right { right: 6px; color: var(--def); border-color: var(--def); }
+
+    .drag-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+      touch-action: pan-y;
+      will-change: transform;
+    }
+    .drag-wrapper.is-swipe-active { cursor: grabbing; }
+    .drag-wrapper.shake-hint { animation: shakeHint .4s ease; }
+
+    @keyframes shakeHint {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+
+    .scene { position: relative; width: 100%; height: 100%; }
+
+    .card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform .55s cubic-bezier(.175, .885, .32, 1.275);
+    }
+    .card.is-flipped { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--card);
+      border: 1.5px solid var(--line);
+      border-left: 6px solid var(--type-color, var(--ink));
+      border-radius: 5px;
+      box-shadow: 0 16px 38px rgba(36, 57, 138, .16), 2px 3px 0 #24398a14;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .card-front {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      text-align: center;
+    }
+    .front-inner {
+      width: 100%;
+      max-width: 650px;
+      max-height: 100%;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .front-inner::-webkit-scrollbar { display: none; }
+    .card-tag {
+      display: inline-block;
+      margin-bottom: 10px;
+      font-size: .76rem;
+      font-weight: 600;
+      letter-spacing: .025em;
+    }
+    .front-title {
+      margin: 0 0 12px;
+      color: var(--ink);
+      font-family: "Marck Script", "Segoe Script", cursive;
+      font-weight: 400;
+      font-size: clamp(1.8rem, 4.4vw, 2.7rem);
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+    .front-section {
+      margin-bottom: 18px;
+      color: #48566d;
+      font-size: .9rem;
+    }
+    .front-hint {
+      display: inline-block;
+      padding-top: 10px;
+      border-top: 1px dashed var(--line);
+      color: #48566d;
+      font-size: .85rem;
+    }
+
+    .card-back {
+      display: flex;
+      flex-direction: column;
+      transform: rotateY(180deg);
+    }
+    .card-scroll {
+      flex: 1;
+      min-height: 0;
+      padding: 22px 26px 24px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line) transparent;
+    }
+    .card-scroll::-webkit-scrollbar { width: 8px; }
+    .card-scroll::-webkit-scrollbar-thumb { background: #b8c6cd; border-radius: 4px; }
+
+    .back-head {
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid #91a6b370;
+    }
+    .back-title {
+      margin: 2px 0 4px;
+      color: var(--ink);
+      font-family: "Marck Script", "Segoe Script", cursive;
+      font-size: 1.65rem;
+      font-weight: 400;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+    .back-section { color: #48566d; font-size: .85rem; }
+    .back-content {
+      margin: 0 0 14px;
+      font-size: 1.02rem;
+      line-height: 1.75;
+      overflow-wrap: anywhere;
+    }
+    .image-list { display: grid; gap: 12px; margin: 0 0 14px; }
+    .card-figure {
+      margin: 0;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+    }
+    .card-figure img {
+      display: block;
+      width: 100%;
+      max-height: min(42vh, 360px);
+      object-fit: contain;
+      background: #fff;
+      cursor: zoom-in;
+    }
+    .card-figure figcaption {
+      padding: 5px 8px;
+      background: #f0f2eb;
+      color: #354156;
+      font-size: .86rem;
+    }
+    .img-fallback {
+      padding: 18px;
+      background: #fdf0f1;
+      color: var(--red);
+      font-size: .9rem;
+      text-align: center;
+    }
+    .note {
+      margin: 14px 0 0;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+      font-size: .98rem;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+    .note b { color: var(--red); font-weight: 600; }
+    .back-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #91a6b370;
+      color: #48566d;
+      font-size: .82rem;
+    }
+    .scroll-fade {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 44px;
+      padding-bottom: 3px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      background: linear-gradient(transparent, var(--card));
+      color: #48566d;
+      font-size: .8rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+      border-radius: 0 0 5px 5px;
+    }
+    .card-back.can-scroll .scroll-fade { opacity: 1; }
+    .card-back.at-bottom .scroll-fade { opacity: 0; }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .actions .btn { min-width: 150px; }
+    .btn-wrong { color: var(--red); border-color: var(--red); }
+    .btn-wrong:hover:not(:disabled) { background: var(--red); color: var(--card); }
+    .btn-know { color: var(--def); border-color: var(--def); }
+    .btn-know:hover:not(:disabled) { background: var(--def); color: var(--card); }
+
+    .hint {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      margin: 12px 0 0;
+      color: #48566d;
+      font-size: .85rem;
+      text-align: center;
+    }
+    .hint .red { color: var(--red); font-weight: 600; }
+    .hint .green { color: var(--def); font-weight: 600; }
+
+    .loading {
+      color: #48566d;
+      font-size: 1.1rem;
+    }
+    .load-error {
+      max-width: 480px;
+      margin: 0 auto;
+      color: var(--ink);
+      text-align: center;
+    }
+    .load-error b {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--red);
+      font-size: 1.2rem;
+    }
+    .load-error p { margin: 6px 0; color: #354156; }
+    .load-error .error-details { color: #6b7785; font-size: .8rem; }
+    .load-error .btn { margin-top: 10px; }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(238, 240, 230, .94);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease;
+    }
+    .overlay.show { opacity: 1; pointer-events: auto; }
+    .pause-overlay { z-index: 300; }
+    .pass-overlay { z-index: 250; }
+    .gameover-overlay { z-index: 200; }
+    .shuffle-overlay { z-index: 100; background: rgba(238, 240, 230, .96); }
+
+    .pause-content {
+      width: 100%;
+      max-width: 620px;
+      max-height: 92vh;
+      max-height: 92dvh;
+      padding: 24px;
+      overflow-y: auto;
+      background: var(--card);
+      border: 1.5px solid var(--ink);
+      border-radius: 5px;
+      box-shadow: 0 20px 50px rgba(36, 57, 138, .18), 2px 3px 0 #24398a14;
+    }
+    .pause-title {
+      margin: 0 0 16px;
+      color: var(--red);
+      font-family: "Marck Script", "Segoe Script", cursive;
+      font-size: 2.6rem;
+      font-weight: 400;
+      line-height: 1.1;
+      text-align: center;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      text-align: center;
+    }
+    .stat {
+      padding: 10px 8px;
+      background: #f7f8f0;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+    }
+    .stat b { display: block; font-size: 1.5rem; line-height: 1.2; }
+    .stat-label {
+      display: block;
+      margin-top: 2px;
+      color: #48566d;
+      font-size: .7rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    #stat-score { color: var(--ink); }
+    #stat-mistakes { color: var(--red); }
+    #stat-remaining { color: var(--def); }
+
+    .missed-section { margin-top: 16px; }
+    .missed-title {
+      margin-bottom: 6px;
+      color: #48566d;
+      font-size: .8rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .missed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 140px;
+      margin: 0;
+      padding: 8px;
+      overflow-y: auto;
+      list-style: none;
+      background: #f7f8f0;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      font-size: .88rem;
+    }
+    .missed-list li {
+      padding: 6px 9px;
+      background: #fdf0f1;
+      border-left: 3px solid var(--red);
+      border-radius: 3px;
+      color: #6e1f28;
+    }
+    .missed-list .empty {
+      padding: 8px;
+      background: transparent;
+      border: 0;
+      color: #48566d;
+      font-style: italic;
+      text-align: center;
+    }
+
+    .pause-actions { display: flex; gap: 10px; margin-top: 16px; }
+    .pause-actions .btn { flex: 1; }
+    .btn.primary { background: var(--ink); color: var(--card); border-color: var(--ink); }
+    .btn.primary:hover:not(:disabled) { background: #1b2c6e; color: var(--card); }
+    .btn.big { padding: 12px 28px; font-size: 1.05rem; }
+
+    .mode-section {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #91a6b370;
+    }
+    .mode-label {
+      margin-bottom: 8px;
+      color: #48566d;
+      font-size: .8rem;
+      letter-spacing: .06em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .mode-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .mode-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 10px 6px;
+      background: var(--card);
+      color: var(--text);
+      border: 1.5px solid var(--line);
+      border-radius: 4px;
+      transition: background-color .2s, border-color .2s, box-shadow .2s, transform .15s;
+    }
+    .mode-btn:hover { background: #e5eaf5; border-color: var(--ink); }
+    .mode-btn:active { transform: scale(.98); }
+    .mode-btn span { color: var(--ink); font-size: 1.2rem; line-height: 1.2; }
+    .mode-btn b { font-size: .9rem; }
+    .mode-btn small { color: #48566d; font-size: .7rem; }
+    .mode-btn.active {
+      background: #e5eaf5;
+      border-color: var(--ink);
+      box-shadow: var(--shadow);
+    }
+    .pause-back {
+      display: block;
+      margin-top: 14px;
+      color: var(--ink);
+      font-size: .85rem;
+      text-align: center;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .stamp {
+      padding: 6px 28px 10px;
+      color: var(--def);
+      background: rgba(220, 235, 213, .6);
+      border: 4px double currentColor;
+      border-radius: 8px;
+      font-family: "Marck Script", "Segoe Script", cursive;
+      font-size: clamp(3.2rem, 10vw, 5.4rem);
+      line-height: 1;
+      letter-spacing: .03em;
+      transform: rotate(-4deg) scale(.8);
+      transition: transform .45s cubic-bezier(.175, .885, .32, 1.275);
+    }
+    .overlay.show .stamp { transform: rotate(-4deg) scale(1); }
+    .gameover-stamp {
+      color: var(--red);
+      background: rgba(253, 240, 241, .7);
+      font-size: clamp(2.4rem, 7.5vw, 4.2rem);
+    }
+    .overlay-sub {
+      max-width: 560px;
+      margin: 18px 0 22px;
+      color: #354156;
+      font-size: 1.05rem;
+      text-align: center;
+    }
+
+    .shuffle-text {
+      margin-bottom: 36px;
+      color: var(--red);
+      font-family: "Marck Script", "Segoe Script", cursive;
+      font-size: 2rem;
+      text-align: center;
+    }
+    .shuffle-deck {
+      position: relative;
+      width: 150px;
+      height: 210px;
+      perspective: 1000px;
+    }
+    .playing-card {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--card);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 14px 14px;
+      border: 1.5px solid var(--ink);
+      border-radius: 5px;
+      box-shadow: var(--shadow);
+      transition: transform .7s cubic-bezier(.25, 1, .5, 1);
+    }
+    .playing-card::before {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 1px solid #24398a33;
+      border-radius: 3px;
+      pointer-events: none;
+    }
+    .playing-card::after {
+      content: attr(data-symbol);
+      z-index: 2;
+      color: var(--ink);
+      font-family: "Marck Script", "Segoe Script", cursive;
+      font-size: 3.4rem;
+      line-height: 1;
+    }
+    .split-left { transform: translateX(-70px) rotate(-10deg) !important; }
+    .split-right { transform: translateX(70px) rotate(10deg) !important; }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(32, 39, 53, .72);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    .lightbox.show { opacity: 1; pointer-events: auto; }
+    .lightbox figure {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-width: min(1000px, 96vw);
+      max-height: 92vh;
+      margin: 0;
+      padding: 10px;
+      background: var(--card);
+      border: 1.5px solid var(--ink);
+      border-radius: 5px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+    }
+    .lightbox img {
+      display: block;
+      max-width: 100%;
+      max-height: 82vh;
+      margin: auto;
+      object-fit: contain;
+    }
+    .lightbox figcaption {
+      padding: 2px 4px;
+      color: #354156;
+      font-size: .9rem;
+      text-align: center;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 254, 245, .92);
+      color: var(--ink);
+      border: 1.5px solid var(--card);
+      border-radius: 50%;
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 500;
+      padding: 8px 16px;
+      background: var(--card);
+      color: var(--def);
+      border: 1.5px solid var(--def);
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+      font-size: .88rem;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 16px);
+      transition: opacity .25s, transform .25s;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 700px) {
+      body { padding: 18px 12px 32px; }
+      .game::before { display: none; }
+      .topline { flex-wrap: wrap; gap: 10px; }
+      h1 { font-size: 2.3rem; }
+      h1 .sep { display: none; }
+      h1 .subtitle { display: block; font-size: 1.25rem; line-height: 1.1; }
+      .sub { display: none; }
+      .back-link { padding: 6px 10px; font-size: .82rem; }
+      .top-panel { gap: 8px 12px; padding: 8px 12px; }
+      .progress-info { font-size: .88rem; }
+      .right-group { width: 100%; margin-left: 0; justify-content: space-between; gap: 10px; }
+      .top-panel.study-mode .right-group { width: auto; margin-left: auto; }
+      .score-row { width: auto; margin-left: 0; gap: 10px; }
+      .score, .pass-count { font-size: .82rem; }
+      .deck { height: clamp(360px, 55vh, 520px); height: clamp(360px, 55dvh, 520px); }
+      .card-front { padding: 20px; }
+      .card-scroll { padding: 18px; }
+      .back-title { font-size: 1.45rem; }
+      .actions { gap: 8px; }
+      .actions .btn { flex: 1; min-width: 0; padding: 9px 10px; font-size: .88rem; }
+      .hint { display: none; }
+      .swipe-indicator { padding: 6px 10px; font-size: .8rem; }
+      .pause-content { padding: 18px; }
+      .pause-title { font-size: 2.2rem; }
+      .mode-btn small { display: none; }
+      .shuffle-deck { width: 128px; height: 180px; }
+      .playing-card::after { font-size: 2.8rem; }
+      .split-left { transform: translateX(-58px) rotate(-10deg) !important; }
+      .split-right { transform: translateX(58px) rotate(10deg) !important; }
+      .overlay-sub { font-size: .95rem; }
+    }
+
+    @media (max-width: 380px) {
+      .mode-buttons { grid-template-columns: 1fr; }
+      .mode-btn { flex-direction: row; justify-content: center; gap: 8px; }
+      .mode-btn small { display: inline; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-delay: 0ms !important;
+        transition-duration: .001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="game">
+    <header class="topline">
+      <div class="title-wrap">
+        <h1><span id="game-brand">mathAnal</span> <span class="sep">·</span> <span class="subtitle">коллоквиум</span></h1>
+        <p class="sub">Переверни карточку, вспомни ответ и оцени себя.</p>
+      </div>
+      <a class="btn back-link" href="./" title="Все карточки">← Все карточки</a>
+    </header>
+
+    <div class="top-panel" id="top-panel">
+      <div class="lives" id="lives" aria-label="Жизни">♥♥♥</div>
+      <div class="progress-info" id="progress-text" aria-live="polite">Загрузка…</div>
+      <div class="right-group">
+        <div class="score-row" id="score-row">
+          <span class="score">Очки: <b id="score-val">0</b></span>
+          <span class="pass-count">Зачётов: <b id="pass-count-val">0</b></span>
+        </div>
+        <button class="icon-btn" id="pause-btn" type="button" aria-label="Пауза" title="Пауза">⏸</button>
+      </div>
+    </div>
+
+    <div class="progress-bar" id="progress-bar" role="progressbar" aria-label="Прогресс" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <section class="deck" id="deck" aria-label="Карточка">
+      <div class="swipe-indicator swipe-left" id="indicator-left" aria-hidden="true">Не знаю</div>
+      <div class="swipe-indicator swipe-right" id="indicator-right" aria-hidden="true">Знаю</div>
+      <div class="drag-wrapper" id="drag-wrapper" role="button" tabindex="0" aria-label="Перевернуть карточку">
+        <div class="scene">
+          <article class="card" id="card">
+            <div class="card-face card-front" id="card-front">
+              <div class="front-inner" id="front-inner">
+                <div class="loading">Загружаем карточки…</div>
+              </div>
+            </div>
+            <div class="card-face card-back" id="card-back">
+              <div class="card-scroll" id="card-scroll">
+                <div class="back-inner" id="back-inner"></div>
+              </div>
+              <div class="scroll-fade" aria-hidden="true">↓ прокрути</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button class="btn btn-wrong" id="btn-wrong" type="button" disabled>← Не знаю</button>
+      <button class="btn btn-know" id="btn-know" type="button" disabled>Знаю →</button>
+    </div>
+
+    <p class="hint">
+      <span id="hint-left"><span class="red">←</span> Не знаю</span>
+      <span id="hint-right"><span class="green">→</span> Знаю</span>
+      <span class="desktop-only">Space — перевернуть</span>
+      <span class="desktop-only">Esc — пауза</span>
+    </p>
+  </main>
+
+  <div class="overlay pause-overlay" id="pause-overlay" role="dialog" aria-modal="true" aria-labelledby="pause-title" aria-hidden="true">
+    <div class="pause-content">
+      <h2 class="pause-title" id="pause-title">Пауза</h2>
+      <div class="stats-grid">
+        <div class="stat"><b id="stat-score">0</b><span class="stat-label" id="stat-score-label">Очки</span></div>
+        <div class="stat"><b id="stat-mistakes">0</b><span class="stat-label" id="stat-mistakes-label">Ошибки</span></div>
+        <div class="stat"><b id="stat-remaining">0</b><span class="stat-label" id="stat-remaining-label">Осталось</span></div>
+      </div>
+      <div class="missed-section">
+        <div class="missed-title">Темы для повторения</div>
+        <ul class="missed-list" id="missed-list"></ul>
+      </div>
+      <div class="pause-actions">
+        <button class="btn primary" id="btn-resume" type="button">Продолжить</button>
+        <button class="btn" id="btn-restart" type="button">Заново</button>
+      </div>
+      <div class="mode-section">
+        <div class="mode-label">Режим игры</div>
+        <div class="mode-buttons">
+          <button class="mode-btn" type="button" data-mode="exam"><span>◎</span><b>Экзамен</b><small>9 карточек</small></button>
+          <button class="mode-btn" type="button" data-mode="marathon"><span>∞</span><b>Марафон</b><small>все карточки</small></button>
+          <button class="mode-btn" type="button" data-mode="study"><span>✎</span><b>Учёба</b><small>без жизней</small></button>
+        </div>
+      </div>
+      <a class="pause-back" href="./">← Вернуться к карточкам</a>
+    </div>
+  </div>
+
+  <div class="overlay pass-overlay" id="pass-overlay" role="dialog" aria-modal="true" aria-labelledby="pass-title" aria-hidden="true">
+    <div class="stamp" id="pass-title">ЗАЧЁТ</div>
+    <p class="overlay-sub" id="pass-subtitle">Вы ответили на все вопросы билета!</p>
+    <button class="btn primary big" id="btn-new-ticket" type="button">Новый билет</button>
+  </div>
+
+  <div class="overlay gameover-overlay" id="gameover-overlay" role="dialog" aria-modal="true" aria-labelledby="gameover-title" aria-hidden="true">
+    <div class="stamp gameover-stamp" id="gameover-title">ОЦЕНКА −20</div>
+    <p class="overlay-sub">Жизни закончились. Колода перемешивается…</p>
+  </div>
+
+  <div class="overlay shuffle-overlay" id="shuffle-overlay" aria-hidden="true">
+    <div class="shuffle-text">Тянем билет…</div>
+    <div class="shuffle-deck" id="shuffle-deck"></div>
+  </div>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Просмотр схемы" aria-hidden="true">
+    <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Закрыть">×</button>
+    <figure>
+      <img id="lightbox-image" alt="">
+      <figcaption id="lightbox-caption"></figcaption>
+    </figure>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var byId = function (id) { return document.getElementById(id); };
+      var els = {
+        gameBrand: byId("game-brand"),
+        lives: byId("lives"),
+        progressText: byId("progress-text"),
+        progressBar: byId("progress-bar"),
+        progressFill: byId("progress-fill"),
+        topPanel: byId("top-panel"),
+        scoreRow: byId("score-row"),
+        scoreVal: byId("score-val"),
+        passCountVal: byId("pass-count-val"),
+        pauseBtn: byId("pause-btn"),
+        deck: byId("deck"),
+        dragWrapper: byId("drag-wrapper"),
+        card: byId("card"),
+        cardFront: byId("card-front"),
+        frontInner: byId("front-inner"),
+        cardBack: byId("card-back"),
+        cardScroll: byId("card-scroll"),
+        backInner: byId("back-inner"),
+        indicatorLeft: byId("indicator-left"),
+        indicatorRight: byId("indicator-right"),
+        btnWrong: byId("btn-wrong"),
+        btnKnow: byId("btn-know"),
+        hintLeft: byId("hint-left"),
+        hintRight: byId("hint-right"),
+        pauseOverlay: byId("pause-overlay"),
+        btnResume: byId("btn-resume"),
+        btnRestart: byId("btn-restart"),
+        statScore: byId("stat-score"),
+        statScoreLabel: byId("stat-score-label"),
+        statMistakes: byId("stat-mistakes"),
+        statMistakesLabel: byId("stat-mistakes-label"),
+        statRemaining: byId("stat-remaining"),
+        statRemainingLabel: byId("stat-remaining-label"),
+        missedList: byId("missed-list"),
+        passOverlay: byId("pass-overlay"),
+        passSubtitle: byId("pass-subtitle"),
+        btnNewTicket: byId("btn-new-ticket"),
+        gameoverOverlay: byId("gameover-overlay"),
+        shuffleOverlay: byId("shuffle-overlay"),
+        shuffleDeck: byId("shuffle-deck"),
+        lightbox: byId("lightbox"),
+        lightboxImage: byId("lightbox-image"),
+        lightboxCaption: byId("lightbox-caption"),
+        lightboxClose: byId("lightbox-close"),
+        toast: byId("toast")
+      };
+      var modeButtons = Array.prototype.slice.call(document.querySelectorAll(".mode-btn"));
+
+      var STORAGE = {
+        stats: "mathanal-game-stats",
+        session: "mathanal-game-session",
+        passCount: "mathanal-game-pass-count"
+      };
+
+      var CARD_TYPES = {
+        def: { label: "Определение", color: "var(--def)" },
+        thm: { label: "Теорема", color: "var(--thm)" },
+        ax: { label: "Аксиома", color: "var(--ax)" },
+        other: { label: "Карточка", color: "var(--ink)" }
+      };
+
+      var MODE_META = {
+        exam: { label: "Вопрос", lives: 3 },
+        marathon: { label: "Вопрос", lives: 3 },
+        study: { label: "Карточка", lives: 0 }
+      };
+
+      var SWIPE_THRESHOLD = 70;
+
+      var state = {
+        allCards: [],
+        mode: "exam",
+        sessionCards: [],
+        currentIndex: 0,
+        score: 0,
+        lives: 3,
+        mistakes: 0,
+        missed: [],
+        passCount: 0,
+        isFlipped: false,
+        isAnimating: false,
+        isPaused: false,
+        stats: {}
+      };
+
+      var drag = {
+        active: false,
+        moved: false,
+        gesture: null,
+        startX: 0,
+        startY: 0,
+        x: 0,
+        y: 0,
+        pointerId: null
+      };
+
+      var toastTimer = null;
+
+      function createEl(tag, className, text) {
+        var el = document.createElement(tag);
+        if (className) el.className = className;
+        if (text !== undefined && text !== null) el.textContent = text;
+        return el;
+      }
+
+      function readJSON(key, fallback) {
+        try {
+          var raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch (e) {
+          return fallback;
+        }
+      }
+
+      function writeJSON(key, value) {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {}
+      }
+
+      function readNumber(key, fallback) {
+        try {
+          var raw = localStorage.getItem(key);
+          var value = raw == null ? NaN : parseInt(raw, 10);
+          return Number.isFinite(value) ? value : fallback;
+        } catch (e) {
+          return fallback;
+        }
+      }
+
+      function writeNumber(key, value) {
+        try {
+          localStorage.setItem(key, String(value));
+        } catch (e) {}
+      }
+
+      function clearSessionStorage() {
+        try {
+          localStorage.removeItem(STORAGE.session);
+        } catch (e) {}
+      }
+
+      function shuffle(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+        }
+        return array;
+      }
+
+      function typeInfo(type) {
+        return CARD_TYPES[type] || CARD_TYPES.other;
+      }
+
+      function normalizeType(value) {
+        var type = String(value || "other").toLowerCase();
+        if (type === "definition") return "def";
+        if (type === "theorem") return "thm";
+        if (type === "axiom") return "ax";
+        return CARD_TYPES[type] ? type : "other";
+      }
+
+      function normalizeImages(value) {
+        if (!value) return [];
+        var list = Array.isArray(value) ? value : [value];
+        return list.map(function (item) {
+          if (typeof item === "string") return { url: item, alt: "", caption: "" };
+          if (!item || typeof item !== "object") return null;
+          return {
+            url: String(item.url || item.src || ""),
+            alt: String(item.alt || ""),
+            caption: String(item.caption || "")
+          };
+        }).filter(function (image) {
+          return image && image.url;
+        });
+      }
+
+      function loadDatabase() {
+        var params = new URLSearchParams(location.search);
+        var source = params.get("data") || "mathAnal.json";
+        return fetch(source, {
+          headers: { Accept: "application/json" },
+          cache: "no-cache"
+        }).then(function (response) {
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          return response.json();
+        }).then(function (raw) {
+          var sections = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.sections) ? raw.sections : []);
+          var cards = [];
+          sections.slice().sort(function (a, b) {
+            return (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0);
+          }).forEach(function (section) {
+            var sectionTitle = String(section.title || section.name || "");
+            var sectionCards = Array.isArray(section.cards) ? section.cards : [];
+            sectionCards.slice().sort(function (a, b) {
+              return (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0);
+            }).forEach(function (card) {
+              var id = String(card.id || card.slug || (sectionTitle + ":" + (card.title || cards.length)));
+              cards.push({
+                id: id,
+                title: String(card.title || card.t || "Без названия"),
+                type: normalizeType(card.type || card.kind),
+                content: String(card.content || card.body || ""),
+                note: String(card.note || card.idea || ""),
+                images: normalizeImages(card.images || card.image),
+                sectionTitle: sectionTitle,
+                sectionId: String(section.id || "")
+              });
+            });
+          });
+          if (!cards.length) throw new Error("В базе нет карточек");
+          return {
+            title: String((raw && raw.title) || "mathAnal"),
+            description: String((raw && raw.description) || ""),
+            cards: cards
+          };
+        });
+      }
+
+      function saveSession() {
+        if (!state.sessionCards.length) return;
+        writeJSON(STORAGE.session, {
+          mode: state.mode,
+          cardIds: state.sessionCards.map(function (card) { return card.id; }),
+          currentIndex: state.currentIndex,
+          score: state.score,
+          lives: state.lives,
+          mistakes: state.mistakes,
+          missed: state.missed,
+          isFlipped: state.isFlipped,
+          savedAt: Date.now()
+        });
+      }
+
+      function loadSession() {
+        var saved = readJSON(STORAGE.session, null);
+        if (!saved || !Array.isArray(saved.cardIds)) return null;
+        var byId = new Map();
+        state.allCards.forEach(function (card) { byId.set(card.id, card); });
+        var cards = saved.cardIds.map(function (id) { return byId.get(String(id)); }).filter(Boolean);
+        if (!cards.length) return null;
+        state.mode = MODE_META[saved.mode] ? saved.mode : "exam";
+        state.sessionCards = cards;
+        state.currentIndex = Math.min(Math.max(0, Number(saved.currentIndex) || 0), cards.length - 1);
+        state.score = Math.max(0, Number(saved.score) || 0);
+        state.lives = Number.isFinite(Number(saved.lives)) ? Number(saved.lives) : MODE_META[state.mode].lives;
+        state.mistakes = Math.max(0, Number(saved.mistakes) || 0);
+        state.missed = Array.isArray(saved.missed) ? saved.missed.filter(function (item) {
+          return typeof item === "string";
+        }) : [];
+        state.isFlipped = !!saved.isFlipped;
+        return saved;
+      }
+
+      function recordAnswer(card, correct) {
+        var stat = state.stats[card.id] || { seen: 0, correct: 0, wrong: 0 };
+        stat.seen = (Number(stat.seen) || 0) + 1;
+        if (correct) stat.correct = (Number(stat.correct) || 0) + 1;
+        else stat.wrong = (Number(stat.wrong) || 0) + 1;
+        state.stats[card.id] = stat;
+        writeJSON(STORAGE.stats, state.stats);
+      }
+
+      function pickSmartCards(count) {
+        var scored = state.allCards.map(function (card) {
+          var stat = state.stats[card.id] || { correct: 0, wrong: 0 };
+          return {
+            card: card,
+            score: ((Number(stat.wrong) || 0) + 1) / ((Number(stat.correct) || 0) + 1)
+          };
+        });
+        shuffle(scored);
+        scored.sort(function (a, b) { return b.score - a.score; });
+        var top = scored.slice(0, Math.min(count * 2, scored.length));
+        shuffle(top);
+        return top.slice(0, count).map(function (item) { return item.card; });
+      }
+
+      function setOverlay(el, visible) {
+        el.classList.toggle("show", visible);
+        el.setAttribute("aria-hidden", visible ? "false" : "true");
+      }
+
+      function updateLivesDisplay() {
+        els.lives.replaceChildren();
+        for (var i = 0; i < 3; i++) {
+          var heart = createEl("span", "heart" + (i < state.lives ? "" : " off"), i < state.lives ? "♥" : "♡");
+          els.lives.appendChild(heart);
+        }
+        els.lives.setAttribute("aria-label", "Жизни: " + Math.max(0, state.lives) + " из 3");
+      }
+
+      function updateScore() {
+        els.scoreVal.textContent = String(state.score);
+      }
+
+      function updatePassCount() {
+        els.passCountVal.textContent = String(state.passCount);
+      }
+
+      function updateProgress() {
+        if (!state.sessionCards.length) {
+          els.progressText.textContent = "Загрузка…";
+          return;
+        }
+        var meta = MODE_META[state.mode] || MODE_META.exam;
+        els.progressText.textContent = meta.label + " " + (state.currentIndex + 1) + " из " + state.sessionCards.length;
+        var percent = ((state.currentIndex + 1) / state.sessionCards.length) * 100;
+        els.progressFill.style.width = percent + "%";
+        els.progressBar.setAttribute("aria-valuenow", String(Math.round(percent)));
+      }
+
+      function updateModeLabels() {
+        var study = state.mode === "study";
+        els.btnWrong.textContent = study ? "← Назад" : "← Не знаю";
+        els.btnKnow.textContent = study ? "Вперёд →" : "Знаю →";
+        els.indicatorLeft.textContent = study ? "Назад" : "Не знаю";
+        els.indicatorRight.textContent = study ? "Вперёд" : "Знаю";
+        els.hintLeft.replaceChildren(createEl("span", "red", "←"), document.createTextNode(study ? " Назад" : " Не знаю"));
+        els.hintRight.replaceChildren(createEl("span", "green", "→"), document.createTextNode(study ? " Вперёд" : " Знаю"));
+      }
+
+      function updateModeUI() {
+        var study = state.mode === "study";
+        els.lives.style.display = study ? "none" : "";
+        els.scoreRow.style.display = study ? "none" : "";
+        els.topPanel.classList.toggle("study-mode", study);
+        modeButtons.forEach(function (button) {
+          button.classList.toggle("active", button.dataset.mode === state.mode);
+        });
+        updateModeLabels();
+        updateProgress();
+      }
+
+      function updateActions() {
+        var disabled = !state.isFlipped || state.isAnimating || state.isPaused || !state.sessionCards.length;
+        els.btnWrong.disabled = disabled;
+        els.btnKnow.disabled = disabled;
+      }
+
+      function updateStatsUI() {
+        if (!state.sessionCards.length) return;
+        var total = state.sessionCards.length;
+        var remaining = Math.max(0, total - state.currentIndex - 1);
+        var study = state.mode === "study";
+        if (study) {
+          els.statScore.textContent = String(state.currentIndex + 1);
+          els.statScoreLabel.textContent = "Просмотрено";
+          els.statMistakes.textContent = String(total);
+          els.statMistakesLabel.textContent = "Всего";
+        } else {
+          els.statScore.textContent = String(state.score);
+          els.statScoreLabel.textContent = "Очки";
+          els.statMistakes.textContent = String(state.mistakes);
+          els.statMistakesLabel.textContent = "Ошибки";
+        }
+        els.statRemaining.textContent = String(remaining);
+        els.statRemainingLabel.textContent = "Осталось";
+        els.missedList.replaceChildren();
+        if (study) {
+          els.missedList.appendChild(createEl("li", "empty", "В режиме учёбы ошибки не считаются."));
+        } else if (!state.missed.length) {
+          els.missedList.appendChild(createEl("li", "empty", "Ошибок пока нет. Так держать!"));
+        } else {
+          Array.from(new Set(state.missed)).forEach(function (title) {
+            els.missedList.appendChild(createEl("li", "", title));
+          });
+        }
+      }
+
+      function updateScrollHint() {
+        var max = els.cardScroll.scrollHeight - els.cardScroll.clientHeight;
+        var canScroll = max > 8;
+        var atBottom = canScroll && els.cardScroll.scrollTop >= max - 4;
+        els.cardBack.classList.toggle("can-scroll", canScroll && !atBottom);
+        els.cardBack.classList.toggle("at-bottom", atBottom);
+      }
+
+      function preloadCardImages(card) {
+        card.images.forEach(function (image) {
+          var img = new Image();
+          img.src = image.url;
+        });
+      }
+
+      function buildFigure(image) {
+        var figure = createEl("figure", "card-figure");
+        var img = document.createElement("img");
+        img.src = image.url;
+        img.alt = image.alt || image.caption || "Схема к карточке";
+        img.loading = "lazy";
+        img.draggable = false;
+        img.addEventListener("click", function (event) {
+          event.stopPropagation();
+          openLightbox(image);
+        });
+        img.addEventListener("error", function () {
+          if (img.dataset.failed) return;
+          img.dataset.failed = "1";
+          img.style.display = "none";
+          figure.prepend(createEl("div", "img-fallback", "Схема не загрузилась"));
+        });
+        figure.appendChild(img);
+        if (image.caption) figure.appendChild(createEl("figcaption", "", image.caption));
+        return figure;
+      }
+
+      function updateCardContent() {
+        var card = state.sessionCards[state.currentIndex];
+        if (!card) return;
+        var type = typeInfo(card.type);
+        els.card.style.setProperty("--type-color", type.color);
+
+        els.frontInner.replaceChildren();
+        var tag = createEl("span", "card-tag", type.label);
+        tag.style.color = type.color;
+        els.frontInner.appendChild(tag);
+        els.frontInner.appendChild(createEl("div", "front-title", card.title));
+        if (card.sectionTitle) els.frontInner.appendChild(createEl("div", "front-section", card.sectionTitle));
+        els.frontInner.appendChild(createEl("div", "front-hint", "нажми, чтобы открыть"));
+
+        els.backInner.replaceChildren();
+        var head = createEl("div", "back-head");
+        var backTag = createEl("span", "card-tag", type.label);
+        backTag.style.color = type.color;
+        head.appendChild(backTag);
+        head.appendChild(createEl("div", "back-title", card.title));
+        if (card.sectionTitle) head.appendChild(createEl("div", "back-section", card.sectionTitle));
+        els.backInner.appendChild(head);
+
+        if (card.content) els.backInner.appendChild(createEl("p", "back-content", card.content));
+
+        if (card.images.length) {
+          var list = createEl("div", "image-list");
+          card.images.forEach(function (image) {
+            list.appendChild(buildFigure(image));
+          });
+          els.backInner.appendChild(list);
+        }
+
+        if (card.note) {
+          var note = createEl("p", "note");
+          note.appendChild(createEl("b", "", card.type === "thm" ? "Доказательство. " : "Идея. "));
+          note.appendChild(document.createTextNode(card.note));
+          els.backInner.appendChild(note);
+        }
+
+        var footer = createEl("div", "back-footer");
+        footer.appendChild(createEl("span", "", "Карточка " + (state.currentIndex + 1) + " из " + state.sessionCards.length));
+        footer.appendChild(createEl("span", "", "mathAnal · коллоквиум"));
+        els.backInner.appendChild(footer);
+
+        els.cardScroll.scrollTop = 0;
+        els.cardBack.classList.remove("can-scroll", "at-bottom");
+        requestAnimationFrame(updateScrollHint);
+        updateProgress();
+        updateModeLabels();
+        updateActions();
+        preloadCardImages(card);
+        var next = state.sessionCards[(state.currentIndex + 1) % state.sessionCards.length];
+        if (next && next !== card) preloadCardImages(next);
+      }
+
+      function renderCard() {
+        state.isFlipped = false;
+        els.card.classList.remove("is-flipped");
+        updateCardContent();
+        updateActions();
+        saveSession();
+      }
+
+      function startNewSession(mode) {
+        if (!state.allCards.length) return;
+        state.mode = MODE_META[mode] ? mode : "exam";
+        state.isAnimating = false;
+        state.isPaused = false;
+        var meta = MODE_META[state.mode];
+        if (state.mode === "exam") {
+          state.sessionCards = pickSmartCards(9);
+        } else if (state.mode === "marathon") {
+          state.sessionCards = shuffle(state.allCards.slice());
+        } else {
+          state.sessionCards = state.allCards.slice();
+        }
+        state.currentIndex = 0;
+        state.mistakes = 0;
+        state.missed = [];
+        state.score = 0;
+        state.lives = meta.lives;
+        setOverlay(els.pauseOverlay, false);
+        updateModeUI();
+        updateLivesDisplay();
+        updateScore();
+        updatePassCount();
+        renderCard();
+        saveSession();
+      }
+
+      function flipCard() {
+        if (state.isAnimating || state.isPaused || state.isFlipped || !state.sessionCards.length) return;
+        state.isFlipped = true;
+        els.card.classList.add("is-flipped");
+        updateActions();
+        saveSession();
+        requestAnimationFrame(updateScrollHint);
+      }
+
+      function answer(direction) {
+        if (!state.isFlipped || state.isAnimating || state.isPaused) return;
+        flyOutAndNext(direction);
+      }
+
+      function flyOutAndNext(direction) {
+        if (state.isAnimating) return;
+        state.isAnimating = true;
+        var currentCard = state.sessionCards[state.currentIndex];
+        var distance = Math.max(window.innerWidth || 1000, window.innerHeight || 800) * 1.25;
+        var sign = direction === "right" ? 1 : -1;
+
+        resetIndicators();
+        if (direction === "right") els.indicatorRight.style.opacity = "1";
+        else els.indicatorLeft.style.opacity = "1";
+
+        els.dragWrapper.style.transition = "transform .38s cubic-bezier(.5, 0, 1, 1)";
+        els.dragWrapper.style.transform = "translate(" + (sign * distance) + "px, " + (drag.y || 0) + "px) rotateZ(" + (sign * 22) + "deg)";
+
+        setTimeout(function () {
+          els.dragWrapper.style.transition = "none";
+          els.dragWrapper.style.transform = "none";
+          els.card.style.transition = "none";
+          els.card.classList.remove("is-flipped");
+          state.isFlipped = false;
+
+          if (state.mode === "study") {
+            state.currentIndex = (state.currentIndex + (direction === "right" ? 1 : -1) + state.sessionCards.length) % state.sessionCards.length;
+            updateCardContent();
+            requestAnimationFrame(function () {
+              els.card.style.transition = "";
+              els.dragWrapper.style.transition = "";
+              resetIndicators();
+              state.isAnimating = false;
+              updateActions();
+              saveSession();
+            });
+            return;
+          }
+
+          recordAnswer(currentCard, direction === "right");
+          if (direction === "right") {
+            state.score++;
+          } else {
+            state.mistakes++;
+            state.missed.push(currentCard.title);
+            state.lives--;
+            updateLivesDisplay();
+          }
+          updateScore();
+
+          var wasLastCard = state.currentIndex >= state.sessionCards.length - 1;
+          if (state.lives <= 0) {
+            els.card.style.transition = "";
+            els.dragWrapper.style.transition = "";
+            resetIndicators();
+            triggerGameOver();
+            return;
+          }
+          if (wasLastCard) {
+            els.card.style.transition = "";
+            els.dragWrapper.style.transition = "";
+            resetIndicators();
+            triggerPass();
+            return;
+          }
+
+          state.currentIndex++;
+          updateCardContent();
+          requestAnimationFrame(function () {
+            els.card.style.transition = "";
+            els.dragWrapper.style.transition = "";
+            resetIndicators();
+            state.isAnimating = false;
+            updateActions();
+            saveSession();
+          });
+        }, 380);
+      }
+
+      function updateIndicators(dx, dy) {
+        resetIndicators();
+        var absX = Math.abs(dx);
+        if (absX < 15) return;
+        if (absX > Math.abs(dy)) {
+          if (dx > 0) els.indicatorRight.style.opacity = String(Math.min(absX / SWIPE_THRESHOLD, 1));
+          else els.indicatorLeft.style.opacity = String(Math.min(absX / SWIPE_THRESHOLD, 1));
+        }
+      }
+
+      function resetIndicators() {
+        els.indicatorLeft.style.opacity = "0";
+        els.indicatorRight.style.opacity = "0";
+      }
+
+      function togglePause() {
+        if (state.isAnimating || !state.sessionCards.length) return;
+        if (els.lightbox.classList.contains("show")) {
+          closeLightbox();
+          return;
+        }
+        state.isPaused = !state.isPaused;
+        if (state.isPaused) {
+          updateStatsUI();
+          setOverlay(els.pauseOverlay, true);
+        } else {
+          setOverlay(els.pauseOverlay, false);
+        }
+        updateActions();
+      }
+
+      function restartFromPause() {
+        setOverlay(els.pauseOverlay, false);
+        state.isPaused = false;
+        state.isAnimating = true;
+        playShuffleAnimation(function () {
+          startNewSession(state.mode);
+        });
+      }
+
+      function switchMode(mode) {
+        if (!MODE_META[mode]) return;
+        if (mode === state.mode) {
+          setOverlay(els.pauseOverlay, false);
+          state.isPaused = false;
+          updateActions();
+          return;
+        }
+        setOverlay(els.pauseOverlay, false);
+        state.isPaused = false;
+        state.mode = mode;
+        state.isAnimating = true;
+        playShuffleAnimation(function () {
+          startNewSession(mode);
+        });
+      }
+
+      function triggerPass() {
+        state.passCount++;
+        writeNumber(STORAGE.passCount, state.passCount);
+        updatePassCount();
+        els.passSubtitle.textContent = state.mode === "marathon"
+          ? "Вы прошли марафон из всех карточек!"
+          : "Вы ответили на все вопросы билета!";
+        els.btnNewTicket.textContent = state.mode === "marathon" ? "Новый марафон" : "Новый билет";
+        setOverlay(els.passOverlay, true);
+        state.isAnimating = true;
+        clearSessionStorage();
+      }
+
+      function resetGameFromOverlay() {
+        setOverlay(els.passOverlay, false);
+        state.isAnimating = true;
+        playShuffleAnimation(function () {
+          startNewSession(state.mode);
+        });
+      }
+
+      function triggerGameOver() {
+        state.isAnimating = true;
+        setOverlay(els.gameoverOverlay, true);
+        clearSessionStorage();
+        setTimeout(function () {
+          setOverlay(els.gameoverOverlay, false);
+          playShuffleAnimation(function () {
+            startNewSession(state.mode);
+          });
+        }, 2000);
+      }
+
+      function playShuffleAnimation(callback) {
+        var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduced) {
+          setOverlay(els.shuffleOverlay, false);
+          callback();
+          return;
+        }
+        setOverlay(els.shuffleOverlay, true);
+        els.shuffleDeck.replaceChildren();
+        var symbols = ["∫", "∑", "∞", "∂", "π", "√", "Δ", "λ", "∏", "∇"];
+        var cards = [];
+        for (var i = 0; i < 10; i++) {
+          var card = createEl("div", "playing-card");
+          card.dataset.symbol = symbols[Math.floor(Math.random() * symbols.length)];
+          card.style.transform = "translateY(" + (-i * 2) + "px)";
+          card.style.zIndex = String(i);
+          els.shuffleDeck.appendChild(card);
+          cards.push(card);
+        }
+        setTimeout(function () {
+          cards.forEach(function (card, index) {
+            card.classList.add(index < 5 ? "split-left" : "split-right");
+          });
+        }, 180);
+        setTimeout(function () {
+          var order = [0, 5, 1, 6, 2, 7, 3, 8, 4, 9];
+          order.forEach(function (cardIndex, dropIndex) {
+            var card = cards[cardIndex];
+            setTimeout(function () {
+              card.classList.remove("split-left", "split-right");
+              var rotation = (Math.random() - 0.5) * 12;
+              card.style.transform = "translateY(" + (-dropIndex * 2) + "px) rotate(" + rotation + "deg)";
+              card.style.zIndex = String(100 + dropIndex);
+            }, dropIndex * 90);
+          });
+        }, 1100);
+        setTimeout(function () {
+          setOverlay(els.shuffleOverlay, false);
+          setTimeout(function () { els.shuffleDeck.replaceChildren(); }, 250);
+          callback();
+        }, 3300);
+      }
+
+      function showToast(text) {
+        els.toast.textContent = text;
+        els.toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          els.toast.classList.remove("show");
+        }, 1400);
+      }
+
+      function openLightbox(image) {
+        els.lightboxImage.src = image.url;
+        els.lightboxImage.alt = image.alt || image.caption || "Схема к карточке";
+        els.lightboxCaption.textContent = image.caption || "";
+        els.lightboxCaption.style.display = image.caption ? "" : "none";
+        setOverlay(els.lightbox, true);
+      }
+
+      function closeLightbox() {
+        setOverlay(els.lightbox, false);
+        els.lightboxImage.src = "";
+      }
+
+      function showLoadError(error) {
+        els.progressText.textContent = "Ошибка загрузки";
+        els.frontInner.replaceChildren();
+        var box = createEl("div", "load-error");
+        box.appendChild(createEl("b", "", "Не удалось загрузить карточки"));
+        box.appendChild(createEl("p", "", "Проверь, что mathAnal.json лежит рядом с game.html, и открой страницу через сервер или с GitHub Pages."));
+        box.appendChild(createEl("p", "error-details", error && error.message ? String(error.message) : "Неизвестная ошибка"));
+        var link = createEl("a", "btn", "← Вернуться к карточкам");
+        link.href = "./";
+        box.appendChild(link);
+        els.frontInner.appendChild(box);
+        els.lives.style.display = "none";
+        els.scoreRow.style.display = "none";
+        els.progressFill.style.width = "0%";
+        els.progressBar.setAttribute("aria-valuenow", "0");
+        updateActions();
+      }
+
+      function onPointerDown(event) {
+        if (state.isAnimating || state.isPaused || !state.sessionCards.length) return;
+        if (event.button !== undefined && event.button !== 0) return;
+        if (event.target && event.target.closest && event.target.closest("img, a, button, input, textarea, select")) return;
+        drag.active = true;
+        drag.moved = false;
+        drag.gesture = null;
+        drag.startX = event.clientX;
+        drag.startY = event.clientY;
+        drag.x = 0;
+        drag.y = 0;
+        drag.pointerId = event.pointerId;
+        els.dragWrapper.style.transition = "none";
+        els.dragWrapper.classList.add("is-swipe-active");
+      }
+
+      function onPointerMove(event) {
+        if (!drag.active) return;
+        var dx = event.clientX - drag.startX;
+        var dy = event.clientY - drag.startY;
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) drag.moved = true;
+        if (!state.isFlipped) return;
+        if (!drag.gesture) {
+          if (Math.abs(dy) > Math.abs(dx) * 1.15) {
+            drag.gesture = "scroll";
+            els.dragWrapper.style.transform = "none";
+            resetIndicators();
+            return;
+          }
+          if (Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) {
+            drag.gesture = "swipe";
+            try { els.dragWrapper.setPointerCapture(event.pointerId); } catch (e) {}
+          } else {
+            return;
+          }
+        }
+        if (drag.gesture !== "swipe") return;
+        drag.x = dx;
+        drag.y = dy;
+        var rotate = dx * 0.04;
+        els.dragWrapper.style.transform = "translate(" + dx + "px, " + (dy * 0.25) + "px) rotateZ(" + rotate + "deg)";
+        updateIndicators(dx, dy);
+      }
+
+      function onPointerUp(event) {
+        if (!drag.active) return;
+        drag.active = false;
+        els.dragWrapper.classList.remove("is-swipe-active");
+        try { els.dragWrapper.releasePointerCapture(event.pointerId); } catch (e) {}
+        els.dragWrapper.style.transition = "transform .3s cubic-bezier(.175, .885, .32, 1.275)";
+
+        if (!state.isFlipped) {
+          if (!drag.moved) flipCard();
+          els.dragWrapper.style.transform = "none";
+          return;
+        }
+        if (drag.gesture === "scroll") {
+          els.dragWrapper.style.transform = "none";
+          resetIndicators();
+          return;
+        }
+        if (!drag.moved) {
+          els.dragWrapper.style.transform = "none";
+          els.dragWrapper.classList.add("shake-hint");
+          setTimeout(function () { els.dragWrapper.classList.remove("shake-hint"); }, 400);
+          return;
+        }
+        var absX = Math.abs(drag.x);
+        var absY = Math.abs(drag.y);
+        if (absX > absY && absX > SWIPE_THRESHOLD) {
+          answer(drag.x > 0 ? "right" : "left");
+        } else {
+          els.dragWrapper.style.transform = "none";
+          resetIndicators();
+        }
+      }
+
+      function onPointerCancel() {
+        if (!drag.active) return;
+        drag.active = false;
+        els.dragWrapper.classList.remove("is-swipe-active");
+        els.dragWrapper.style.transition = "transform .3s cubic-bezier(.175, .885, .32, 1.275)";
+        els.dragWrapper.style.transform = "none";
+        resetIndicators();
+      }
+
+      function boot() {
+        state.stats = readJSON(STORAGE.stats, {});
+        if (!state.stats || typeof state.stats !== "object" || Array.isArray(state.stats)) state.stats = {};
+        state.passCount = readNumber(STORAGE.passCount, 0);
+        updatePassCount();
+        updateLivesDisplay();
+        els.progressText.textContent = "Загрузка…";
+
+        loadDatabase().then(function (database) {
+          state.allCards = database.cards;
+          els.gameBrand.textContent = database.title || "mathAnal";
+          document.title = (database.title || "mathAnal") + " — мини-игра";
+          var saved = loadSession();
+          if (saved) {
+            updateModeUI();
+            updateLivesDisplay();
+            updateScore();
+            updatePassCount();
+            renderCard();
+            if (saved.isFlipped) {
+              setTimeout(function () {
+                els.card.classList.add("is-flipped");
+                state.isFlipped = true;
+                updateActions();
+                requestAnimationFrame(updateScrollHint);
+              }, 120);
+            }
+            showToast("Прогресс восстановлен");
+          } else {
+            startNewSession("exam");
+          }
+        }).catch(function (error) {
+          console.error(error);
+          showLoadError(error);
+        });
+      }
+
+      els.pauseBtn.addEventListener("click", togglePause);
+      els.btnResume.addEventListener("click", togglePause);
+      els.btnRestart.addEventListener("click", restartFromPause);
+      els.btnNewTicket.addEventListener("click", resetGameFromOverlay);
+      els.btnWrong.addEventListener("click", function () { answer("left"); });
+      els.btnKnow.addEventListener("click", function () { answer("right"); });
+
+      modeButtons.forEach(function (button) {
+        button.addEventListener("click", function () { switchMode(button.dataset.mode); });
+      });
+
+      els.lightboxClose.addEventListener("click", closeLightbox);
+      els.lightbox.addEventListener("click", function (event) {
+        if (event.target === els.lightbox) closeLightbox();
+      });
+
+      els.cardScroll.addEventListener("scroll", updateScrollHint, { passive: true });
+      window.addEventListener("resize", updateScrollHint);
+
+      els.dragWrapper.addEventListener("pointerdown", onPointerDown);
+      document.addEventListener("pointermove", onPointerMove);
+      document.addEventListener("pointerup", onPointerUp);
+      document.addEventListener("pointercancel", onPointerCancel);
+
+      els.dragWrapper.addEventListener("keydown", function (event) {
+        if (event.code === "Enter" || event.code === "NumpadEnter" || event.code === "Space") {
+          event.preventDefault();
+          event.stopPropagation();
+          flipCard();
+        }
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.code === "Escape") {
+          if (els.lightbox.classList.contains("show")) { closeLightbox(); return; }
+          if (els.pauseOverlay.classList.contains("show")) { togglePause(); return; }
+          if (!els.passOverlay.classList.contains("show") && !els.gameoverOverlay.classList.contains("show") && !els.shuffleOverlay.classList.contains("show")) togglePause();
+          return;
+        }
+        var tag = event.target && event.target.tagName ? event.target.tagName.toLowerCase() : "";
+        var interactive = tag === "button" || tag === "input" || tag === "textarea" || tag === "select" || (event.target && event.target.isContentEditable);
+        if (interactive) return;
+        if (els.lightbox.classList.contains("show") || els.pauseOverlay.classList.contains("show") || els.passOverlay.classList.contains("show") || els.gameoverOverlay.classList.contains("show") || els.shuffleOverlay.classList.contains("show")) return;
+        if (event.code === "Space") {
+          event.preventDefault();
+          if (!state.isFlipped) flipCard();
+          return;
+        }
+        if (!state.isFlipped || state.isAnimating || state.isPaused) return;
+        if (event.code === "ArrowRight") { event.preventDefault(); answer("right"); }
+        if (event.code === "ArrowLeft") { event.preventDefault(); answer("left"); }
+      });
+
+      window.MathGame = {
+        get cards() {
+          return state.allCards.map(function (card) {
+            return { id: card.id, title: card.title, type: card.type, images: card.images.length };
+          });
+        },
+        get state() {
+          var current = state.sessionCards[state.currentIndex];
+          return {
+            mode: state.mode,
+            currentIndex: state.currentIndex,
+            sessionLength: state.sessionCards.length,
+            currentId: current ? current.id : null,
+            score: state.score,
+            lives: state.lives,
+            mistakes: state.mistakes,
+            isFlipped: state.isFlipped,
+            isAnimating: state.isAnimating,
+            isPaused: state.isPaused
+          };
+        },
+        start: function (mode) { startNewSession(mode || "exam"); },
+        flip: flipCard,
+        answer: answer,
+        goTo: function (index) {
+          if (!Number.isInteger(index) || index < 0 || index >= state.sessionCards.length) return false;
+          state.currentIndex = index;
+          renderCard();
+          return true;
+        },
+        goToId: function (id) {
+          var index = state.sessionCards.findIndex(function (card) { return card.id === id; });
+          if (index < 0) return false;
+          state.currentIndex = index;
+          renderCard();
+          return true;
+        },
+        openImage: function (index) {
+          var card = state.sessionCards[state.currentIndex];
+          var image = card && card.images[index];
+          if (image) openLightbox(image);
+        },
+        clearSession: clearSessionStorage
+      };
+
+      boot();
+    }());
+  </script>
+</body>
+</html>
