@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Карточки</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+  <style>
+    :root{--paper:#f7f8f4;--grid:#cfe0e6;--ink:#1f2f8f;--red:#c0282d;--text:#1b2030;--card:#fffffb;--line:#9db4c0;--done:#e4f1e0;--def:#2f7d4f;--thm:#b5651d;--ax:#7b4aa0;color-scheme:light}
+    *{box-sizing:border-box} html{scroll-padding-top:env(safe-area-inset-top,0px)} body{margin:0;background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:22px 22px;color:var(--text);font-family:"Source Serif 4",Georgia,serif;line-height:1.55;padding:24px 16px 64px} main{max-width:760px;margin:auto;position:relative}
+    h1,.term,h2{font-family:"Marck Script","Segoe Script",cursive;font-weight:400}.topline{display:flex;gap:12px;align-items:flex-start}.title-wrap{min-width:0;flex:1}h1{font-size:2.6rem;color:var(--ink);margin:0 0 4px;line-height:1.1}.sub{margin:0 0 18px;max-width:60ch}.settings{width:44px;height:44px;border:1.5px solid var(--ink);border-radius:50%;background:var(--card);color:var(--ink);font-size:1.4rem;cursor:pointer;flex:0 0 auto}.settings:hover,.settings.active{background:var(--ink);color:var(--paper)}
+    .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}button{font:inherit;cursor:pointer}.btn,.mark{background:var(--card);color:var(--text);border:1.5px solid var(--ink);border-radius:6px;padding:8px 14px}.btn:hover{background:var(--ink);color:var(--paper)}.count{margin-left:auto;color:var(--ink)}.legend{display:flex;gap:16px;margin:0 0 26px;font-size:.88rem;flex-wrap:wrap}.legend span{display:inline-flex;align-items:center;gap:6px}.dot{width:10px;height:10px;border-radius:50%;display:inline-block}.dot.def{background:var(--def)}.dot.thm{background:var(--thm)}.dot.ax{background:var(--ax)}
+    .edit-panel{display:none;background:#edf2ff;border:1px solid var(--ink);border-radius:7px;padding:12px 14px;margin:0 0 20px}.editing .edit-panel{display:block}.edit-panel p{margin:0 0 8px;font-size:.92rem}.edit-panel .btn{font-size:.9rem;padding:6px 10px}.edit-tools{display:flex;gap:8px;flex-wrap:wrap}.danger{border-color:var(--red);color:var(--red)}.danger:hover{background:var(--red)}
+    h2{font-size:1.8rem;color:var(--red);margin:34px 0 10px;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}.section-row{display:flex;align-items:center;gap:10px}.section-row h2{flex:1}.section-edit,.card-edit{display:none;border:1px solid var(--line);background:var(--card);border-radius:5px;padding:5px 8px;font-size:.82rem}.editing .section-edit,.editing .card-edit{display:inline-block}.card{background:var(--card);border:1.5px solid var(--line);border-left:6px solid var(--ink);border-radius:4px;margin:0 0 12px}.card.def{border-left-color:var(--def)}.card.thm{border-left-color:var(--thm)}.card.ax{border-left-color:var(--ax)}.card.done{background:var(--done)}.head{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;background:none;border:0;color:inherit;padding:14px 16px;min-height:52px}.headleft{display:flex;flex-direction:column;gap:2px}.tag{font-size:.72rem;font-weight:600;letter-spacing:.02em}.tag.def{color:var(--def)}.tag.thm{color:var(--thm)}.tag.ax{color:var(--ax)}.tag.other{color:var(--ink)}.term{font-size:1.5rem;color:var(--ink);line-height:1.2}.hint{font-size:.85rem;opacity:.7;white-space:nowrap}.body{display:grid;grid-template-rows:0fr;opacity:0;padding:0 16px;transition:grid-template-rows .32s ease,opacity .24s ease,padding .32s ease}.body-inner{overflow:hidden;min-height:0}.card.open .body{grid-template-rows:1fr;opacity:1;padding-bottom:14px}.card.open .hint{display:none}.body p{margin:0 0 8px}.idea{border-top:1px dashed var(--line);padding-top:8px;font-size:.95rem}.idea b{color:var(--red);font-weight:600}.mark{border-color:var(--line);padding:5px 10px;font-size:.9rem}.card.done .mark{border-color:#3a8a4a}.card-actions{display:none;gap:8px;margin-top:10px}.editing .card-actions{display:flex}.image-list{display:grid;gap:10px;margin:12px 0}.card-figure{margin:0;border:1px solid var(--line);background:#fff}.card-figure img{display:block;width:100%;max-height:540px;object-fit:contain;cursor:zoom-in}.card-figure figcaption{padding:5px 8px;font-size:.86rem;color:#425}.empty,.status{padding:18px;background:var(--card);border:1px dashed var(--line);border-radius:5px}.status.error{border-color:var(--red);color:var(--red)}
+    .card{position:relative}.head{padding-right:54px}.star{position:absolute;top:7px;right:7px;z-index:2;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;padding:0;border:0;border-radius:50%;background:transparent;color:#b9a25c;font-size:1.55rem;line-height:1;cursor:pointer;transition:transform .18s ease,color .2s ease,background-color .2s ease}.star:hover{background:#f3e7bf;color:#c58f0a}.star.on{color:#e0a800}.star.pop{animation:pop .26s ease}.card.fav{border-top-color:#e6c66b;border-right-color:#e6c66b;border-bottom-color:#e6c66b}.btn.active{background:var(--ink);color:var(--paper)}
+    dialog{width:min(680px,calc(100% - 24px));border:1.5px solid var(--ink);border-radius:8px;padding:0;background:var(--paper);color:var(--text);box-shadow:0 12px 45px #0006}dialog::backdrop{background:#17225080}.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}.modal-head h3{margin:0;color:var(--ink)}.icon-close{border:0;background:none;font-size:1.5rem}.modal-body{padding:16px 18px}.field{display:block;margin:0 0 12px;font-size:.9rem;font-weight:600}.field input,.field textarea,.field select{display:block;width:100%;margin-top:4px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:8px;font:inherit;color:inherit;font-weight:400}.field textarea{min-height:90px;resize:vertical}.modal-actions{display:flex;gap:9px;flex-wrap:wrap;padding:0 18px 18px}.modal-actions .danger{margin-left:auto}.small-note{font-size:.82rem;opacity:.75;margin:-5px 0 12px}.lightbox{border:0;background:transparent;width:min(1000px,96vw);padding:0}.lightbox img{max-width:100%;max-height:92vh;display:block;margin:auto}.lightbox button{position:absolute;right:8px;top:8px;border:0;border-radius:50%;font-size:1.4rem;width:38px;height:38px}.hidden{display:none!important}@keyframes card-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @keyframes fade-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+    @keyframes modal-in{from{opacity:0;transform:translateY(9px) scale(.985)}to{opacity:1;transform:none}}
+    @keyframes backdrop-in{from{opacity:0}to{opacity:1}}
+    @keyframes pop{0%,100%{transform:scale(1)}45%{transform:scale(1.07)}}
+    .topline{animation:fade-in .35s ease-out backwards}.bar{animation:fade-in .35s .06s ease-out backwards}.legend{animation:fade-in .35s .12s ease-out backwards}.edit-panel{animation:fade-in .24s ease-out backwards}
+    .section-row{animation:card-in .3s ease-out backwards;animation-delay:var(--delay,0ms)}
+    .card{transition:background-color .25s ease,border-color .25s ease,box-shadow .22s ease,transform .22s ease;animation:card-in .32s ease-out backwards;animation-delay:var(--delay,0ms)}
+    .settings{transition:transform .35s cubic-bezier(.2,.8,.3,1),background-color .2s,color .2s}.settings:hover{transform:rotate(45deg)}.settings.active{transform:rotate(180deg)}
+    .btn,.mark,.section-edit,.card-edit{transition:transform .15s ease,background-color .2s,color .2s,border-color .2s}.btn:active,.mark:active,.section-edit:active,.card-edit:active{transform:scale(.97)}
+    .mark.pop{animation:pop .26s ease}
+    .card-figure img{transition:transform .25s ease,filter .2s ease}
+    dialog[open]{animation:modal-in .22s ease-out backwards}dialog::backdrop{animation:backdrop-in .2s ease-out backwards}.lightbox img{animation:modal-in .22s ease-out backwards}
+    @media(hover:hover) and (pointer:fine){.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px #1f2f8f14}.card-figure img:hover{transform:scale(1.012)}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-delay:0ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+    :focus-visible{outline:3px solid var(--red);outline-offset:2px}@media(max-width:480px){h1{font-size:2.1rem}.term{font-size:1.3rem}.count{width:100%;margin-left:0}.hint{display:none}.head{padding-right:50px}.modal-actions .danger{margin-left:0}}
+    /* Тетрадный стиль: отчётливая клетка и контрастные чернила. */
+    :root{--paper:#eef0e6;--grid:#bdcfd3;--ink:#24398a;--red:#ae2934;--text:#202735;--card:#fffef5;--line:#91a6b3;--done:#dcebd5;--def:#28663e;--thm:#99501d;--ax:#70418e}
+    body{padding:36px 24px 64px;background-size:24px 24px;font-size:16px}
+    main{max-width:800px}
+    main::before{content:"";position:absolute;top:0;bottom:0;left:-22px;width:3px;border-left:1px solid #bc4a5270;border-right:1px solid #bc4a5240;pointer-events:none}
+    .topline{gap:20px;padding:0 0 16px;margin-bottom:18px;border-bottom:2px solid #24398a55}
+    h1{font-size:3rem;line-height:1.15;overflow-wrap:anywhere}
+    .sub{margin:10px 0 0;color:#354156;line-height:1.7}
+    .settings{background:var(--card);border-width:2px;box-shadow:2px 2px 0 #24398a18}
+    .bar{gap:9px;margin-bottom:16px}
+    .btn,.mark{border-radius:5px;border-width:1.5px;background:var(--card);color:var(--ink);box-shadow:1px 2px 0 #24398a12;font-weight:600}
+    .btn:hover,.btn.active{background:var(--ink);color:#fffef5}
+    .btn.danger{color:var(--red);border-color:var(--red)}
+    .btn.danger:hover{background:var(--red);color:#fffef5}
+    .count{color:#26396b;font-weight:600;font-size:.9rem}
+    .legend{gap:10px 20px;color:#354156;margin-bottom:28px}
+    .dot{box-shadow:0 0 0 2px var(--paper)}
+    .section-row{gap:12px;flex-wrap:wrap;margin:30px 0 12px}
+    .section-row h2{margin:0;font-size:2rem;line-height:1.4;text-decoration-thickness:1.5px;text-underline-offset:5px;overflow-wrap:anywhere;min-width:160px}
+    .card{border-radius:5px;border-width:1.5px;border-left-width:5px;margin-bottom:14px;box-shadow:2px 3px 0 #24398a12}
+    .head{min-height:84px;padding:16px 58px 16px 20px}
+    .headleft{gap:5px;min-width:0}
+    .tag{font-size:.76rem;letter-spacing:.025em}
+    .term{font-size:1.7rem;line-height:1.25;overflow-wrap:anywhere}
+    .hint{font-size:.8rem;color:#48566d;opacity:1}
+    .star{top:12px;right:10px;color:#806a35}
+    .star.on{color:#a87900;background:#f9edc5}
+    .star:hover{background:#f1e1aa;color:#956a00}
+    .card.fav{border-top-color:#bca354;border-right-color:#bca354;border-bottom-color:#bca354}
+    .body{padding:0 20px;font-size:1.02rem;line-height:1.75;overflow-wrap:anywhere}
+    .card.open .body{padding-bottom:18px}
+    .body-inner>p:first-child{border-top:1px solid #91a6b370;padding-top:12px}
+    .idea{border-top-color:var(--line);padding-top:12px;margin-top:12px;font-size:1rem}
+    .mark{margin-top:6px;min-height:36px;font-weight:400;color:#243c30;border-color:#72927c}
+    .mark:hover{background:#e0ecd8}
+    .card.done .mark{background:#cfe2c3;border-color:#4b7750;color:#21442a}
+    .section-edit,.card-edit{color:var(--ink);border-color:var(--line);min-height:34px}
+    .section-edit:hover,.card-edit:hover{background:#e5eaf5}
+    .card-figure{border-radius:4px;overflow:hidden}
+    .card-figure figcaption{color:#354156;background:#f0f2eb}
+    .edit-panel{background:#e5eaf5;border-radius:5px;color:#26396b}
+    .small-note{color:#455269;opacity:1}
+    .empty,.status{padding:22px;border:1.5px dashed var(--line);background:var(--card);border-radius:5px;color:#354156}
+    .status.error{color:var(--red);border-color:var(--red)}
+    dialog{border-radius:7px;background:var(--card)}
+    .modal-head{background:#edf0f4}.icon-close{color:var(--ink);cursor:pointer}
+    .field input,.field textarea,.field select{border-color:#849aa9;background:#fffef9;line-height:1.6}
+    .modal-actions button[type="submit"]{background:var(--ink);color:#fffef5}
+    .lightbox{background:transparent}.lightbox button{cursor:pointer;color:var(--ink)}
+    @media(hover:hover) and (pointer:fine){.card:hover{transform:translateY(-1px);box-shadow:3px 5px 0 #24398a16}}
+    @media(max-width:600px){body{padding:24px 16px 48px 24px}main::before{left:-13px}.topline{gap:12px}h1{font-size:2.5rem}.bar{gap:8px}.btn{padding:8px 11px}.count{flex-basis:100%;margin-left:0}.hint{display:none}.section-row h2{font-size:1.8rem}.head{padding:14px 52px 14px 16px}.term{font-size:1.5rem}.body{padding:0 16px}.star{right:7px}.legend{font-size:.83rem}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="topline"><div class="title-wrap"><h1 id="database-title">Карточки</h1><p class="sub" id="database-description"></p></div><button class="settings" id="settings" type="button" aria-label="Включить режим редактирования" title="Режим редактирования">⚙</button></div>
+  <div class="edit-panel" id="edit-panel"><p><b>Режим редактирования включён.</b> Изменения сохраняются локально в этом браузере и не отправляются в удалённую базу.</p><div class="edit-tools"><button class="btn" id="edit-base" type="button">Изменить название базы</button><button class="btn" id="add-section" type="button">Добавить раздел</button><button class="btn danger" id="clear-draft" type="button">Отменить локальные изменения</button></div></div>
+  <div class="bar"><button class="btn" id="all" type="button">Показать все</button><button class="btn" id="shuffle" type="button">Перемешать</button><button class="btn" id="favorites-filter" type="button" aria-pressed="false" title="Показать только избранные карточки">★ Избранное</button><button class="btn" id="reset" type="button">Сбросить отметки</button><span class="count" id="count"></span></div>
+  <div class="legend" id="legend"><span><i class="dot def"></i>определение</span><span><i class="dot thm"></i>теорема / доказательство</span><span><i class="dot ax"></i>аксиома</span></div><div id="root" aria-live="polite"></div>
+</main>
+<dialog id="editor"><form id="editor-form"><div class="modal-head"><h3 id="editor-title">Редактирование</h3><button class="icon-close" type="button" data-close="editor" aria-label="Закрыть">×</button></div><div class="modal-body" id="editor-fields"></div><div class="modal-actions"><button class="btn" type="submit">Сохранить</button><button class="btn danger hidden" id="delete-item" type="button">Удалить</button><button class="btn" type="button" data-close="editor">Отмена</button></div></form></dialog>
+<dialog class="lightbox" id="lightbox"><button type="button" data-close="lightbox" aria-label="Закрыть">×</button><img id="lightbox-image" alt=""></dialog>
+<script>
+/* Конфигурация источника. По умолчанию данные загружаются из mathAnal.json.
+   Для другой базы задайте window.CARDS_DATABASE до загрузки файла или откройте:
+   visual.html?data=https://example.org/cards.json */
+window.CARDS_CONFIG = window.CARDS_CONFIG || { source: "mathAnal.json", supabase: null };
+
+
+(function(){
+  "use strict";
+  var root=document.getElementById("root"), titleEl=document.getElementById("database-title"), descEl=document.getElementById("database-description"), settings=document.getElementById("settings"), editor=document.getElementById("editor"), fields=document.getElementById("editor-fields"), editorTitle=document.getElementById("editor-title"), deleteButton=document.getElementById("delete-item");
+  var database=null, originalDatabase=null, done={}, favorites={}, favoritesOnly=false, allOpen=false, editing=false, editTarget=null, shuffled=false;
+  function uid(prefix){return prefix+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
+  function clone(x){return JSON.parse(JSON.stringify(x))}
+  function cleanText(x){return x==null?"":String(x)}
+  function cardId(card){return card.id||card.slug||card.title}
+  function storageKey(kind){return "universal-cards-"+kind+"-"+(database&&database.id||"default")}
+  function loadDone(){var key=storageKey("progress");if(database&&database.id==="mathAnal"&&!localStorage.getItem(key))key="universal-cards-progress-mathan-colloquium";try{done=JSON.parse(localStorage.getItem(key)||"{}")}catch(e){done={}}}
+  function saveDone(){try{localStorage.setItem(storageKey("progress"),JSON.stringify(done))}catch(e){}}
+  function loadFavorites(){var key=storageKey("favorites");try{favorites=JSON.parse(localStorage.getItem(key)||"{}")}catch(e){favorites={}}}
+  function saveFavorites(){try{localStorage.setItem(storageKey("favorites"),JSON.stringify(favorites))}catch(e){}}
+  function normalizeImage(image){if(typeof image==="string")return {url:image,alt:"",caption:""};return {url:cleanText(image.url||image.src),alt:cleanText(image.alt),caption:cleanText(image.caption)}}
+  function normalizeCard(card,index){var type=cleanText(card.type||card.kind||"other").toLowerCase();if(type==="definition")type="def";if(type==="theorem")type="thm";if(type==="axiom")type="ax";return {id:cleanText(card.id||card.slug||uid("card")),title:cleanText(card.title||card.t||"Без названия"),type:type,content:cleanText(card.content||card.body||card.b),note:cleanText(card.note||card.idea||card.i),images:(card.images||card.image?[].concat(card.images||card.image):[]).filter(Boolean).map(normalizeImage),sort_order:card.sort_order==null?index:card.sort_order}}
+  function normalize(raw){
+    if(Array.isArray(raw))raw={sections:raw}; raw=raw||{};
+    var sections=raw.sections||raw.groups||raw.data||[];
+    if(!Array.isArray(sections))sections=[];
+    return {id:cleanText(raw.id||raw.slug||raw.key||"local-base"),title:cleanText(raw.title||raw.name||"Карточки"),description:cleanText(raw.description||raw.subtitle||""),sections:sections.map(function(s,si){var cards=s.cards||s.c||[];return {id:cleanText(s.id||s.slug||uid("section")),title:cleanText(s.title||s.name||s.s||"Раздел "+(si+1)),sort_order:s.sort_order==null?si:s.sort_order,cards:cards.map(normalizeCard)}})}
+  }
+  function localDraftKey(id){return "universal-cards-draft-"+id}
+  function loadDraft(base){try{var draft=JSON.parse(localStorage.getItem(localDraftKey(base.id))||"null");return draft?normalize(draft):base}catch(e){return base}}
+  function saveDraft(){try{localStorage.setItem(localDraftKey(database.id),JSON.stringify(database))}catch(e){}}
+  function fetchJson(url,headers){return fetch(url,{headers:Object.assign({Accept:"application/json"},headers||{})}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})}
+  function configuredSource(){var p=new URLSearchParams(location.search), url=p.get("data");if(url)return fetchJson(url);if(window.CARDS_DATABASE)return Promise.resolve(window.CARDS_DATABASE);var c=window.CARDS_CONFIG||{};if(c.source)return typeof c.source==="string"?fetchJson(c.source):Promise.resolve(c.source);if(c.supabase&&c.supabase.url&&c.supabase.anonKey){var u=c.supabase.url.replace(/\/$/,"")+"/rest/v1/"+(c.supabase.view||"card_databases")+"?select=*";return fetchJson(u,{apikey:c.supabase.anonKey,Authorization:"Bearer "+c.supabase.anonKey})}throw new Error("Не задан источник базы карточек")}
+  function typeLabel(type){return type==="def"?"Определение":type==="thm"?"Теорема":type==="ax"?"Аксиома":type||"Карточка"}
+  function el(name,props){var node=document.createElement(name);props=props||{};Object.keys(props).forEach(function(k){if(k==="text")node.textContent=props[k];else if(k==="class")node.className=props[k];else if(k.indexOf("on")===0)node.addEventListener(k.slice(2),props[k]);else node.setAttribute(k,props[k])});return node}
+  function count(){var total=database.sections.reduce(function(n,s){return n+s.cards.length},0), learned=Object.keys(done).filter(function(id){return done[id]}).length, fav=Object.keys(favorites).filter(function(id){return favorites[id]}).length;document.getElementById("count").textContent="Выучено: "+learned+" из "+total+" · В избранном: "+fav}
+  function showImage(img){document.getElementById("lightbox-image").src=img.url;document.getElementById("lightbox-image").alt=img.alt||"";document.getElementById("lightbox").showModal()}
+  function build(){
+    root.innerHTML="";document.body.classList.toggle("editing",editing);titleEl.textContent=database.title;descEl.textContent=database.description;descEl.classList.toggle("hidden",!database.description);document.title=database.title;settings.classList.toggle("active",editing);settings.setAttribute("aria-label",editing?"Выключить режим редактирования":"Включить режим редактирования");var favBtn=document.getElementById("favorites-filter");favBtn.classList.toggle("active",favoritesOnly);favBtn.setAttribute("aria-pressed",favoritesOnly?"true":"false");
+    var sections=database.sections.slice().sort(function(a,b){return a.sort_order-b.sort_order});if(shuffled){var flat=[];sections.forEach(function(s){s.cards.forEach(function(c){flat.push(c)})});shuffle(flat);sections=[{id:"shuffle",title:"Вразброс",cards:flat}]}
+    if(favoritesOnly){sections=sections.map(function(s){return {id:s.id,title:s.title,sort_order:s.sort_order,cards:(s.cards||[]).filter(function(c){return !!favorites[cardId(c)]})}}).filter(function(s){return s.cards.length})}
+    if(!sections.length){root.appendChild(el("p",{class:"empty",text:favoritesOnly?"Пока нет избранных карточек. Нажмите ☆ на карточке, чтобы добавить её сюда.":"В этой базе пока нет разделов и карточек."}));count();return}
+    sections.forEach(function(section,sectionIndex){var row=el("div",{class:"section-row"}), h=el("h2",{text:section.title});row.style.setProperty("--delay",Math.min(sectionIndex*45,225)+"ms");row.appendChild(h);if(!shuffled){var add=el("button",{class:"section-edit",type:"button",text:"+ Карточка",onclick:function(){addCard(section)}});row.appendChild(add);var se=el("button",{class:"section-edit",type:"button",text:"Изменить раздел",onclick:function(){openSectionEditor(section)}});row.appendChild(se)}root.appendChild(row);(section.cards||[]).slice().sort(function(a,b){return a.sort_order-b.sort_order}).forEach(function(card,cardIndex){renderCard(card,section,cardIndex)})});count();
+  }
+  function renderCard(card,section,index){var id=cardId(card), box=el("article",{class:"card "+card.type+(done[id]?" done":"")+(favorites[id]?" fav":"")+(allOpen?" open":"")}), head=el("button",{class:"head",type:"button","aria-expanded":allOpen?"true":"false"}), left=el("span",{class:"headleft"});box.style.setProperty("--delay",Math.min((index||0)*35,210)+"ms");left.appendChild(el("span",{class:"tag "+card.type,text:typeLabel(card.type)}));left.appendChild(el("span",{class:"term",text:card.title}));head.appendChild(left);var star=el("button",{class:"star"+(favorites[id]?" on":""),type:"button","aria-pressed":favorites[id]?"true":"false","aria-label":favorites[id]?"Убрать из избранного":"Добавить в избранное",title:favorites[id]?"Убрать из избранного":"Добавить в избранное",text:favorites[id]?"★":"☆",onclick:function(e){e.stopPropagation();favorites[id]=!favorites[id];if(!favorites[id])delete favorites[id];saveFavorites();box.classList.toggle("fav",!!favorites[id]);this.classList.toggle("on",!!favorites[id]);var label=favorites[id]?"Убрать из избранного":"Добавить в избранное";this.textContent=favorites[id]?"★":"☆";this.setAttribute("aria-pressed",favorites[id]?"true":"false");this.setAttribute("aria-label",label);this.title=label;this.classList.remove("pop");void this.offsetWidth;this.classList.add("pop");count();if(favoritesOnly&&!favorites[id])build()}});head.appendChild(el("span",{class:"hint",text:"нажми, чтобы открыть"}));var body=el("div",{class:"body"}), inner=el("div",{class:"body-inner"});if(card.content)inner.appendChild(el("p",{text:card.content}));if(card.images&&card.images.length){var imgs=el("div",{class:"image-list"});card.images.forEach(function(image){if(!image.url)return;var fig=el("figure",{class:"card-figure"}), picture=el("img",{src:image.url,alt:image.alt||image.caption||"Изображение карточки",loading:"lazy",onclick:function(){showImage(image)}});fig.appendChild(picture);if(image.caption)fig.appendChild(el("figcaption",{text:image.caption}));imgs.appendChild(fig)});inner.appendChild(imgs)}if(card.note){var note=el("p",{class:"idea"});note.appendChild(el("b",{text:card.type==="thm"?"Доказательство. ":"Идея. "}));note.appendChild(document.createTextNode(card.note));inner.appendChild(note)}var mark=el("button",{class:"mark",type:"button",text:done[id]?"Выучено, снять отметку":"Выучил",onclick:function(e){e.stopPropagation();done[id]=!done[id];if(!done[id])delete done[id];saveDone();box.classList.toggle("done",!!done[id]);this.textContent=done[id]?"Выучено, снять отметку":"Выучил";this.classList.remove("pop");void this.offsetWidth;this.classList.add("pop");count()}});inner.appendChild(mark);var actions=el("div",{class:"card-actions"});actions.appendChild(el("button",{class:"card-edit",type:"button",text:"Изменить карточку",onclick:function(){openCardEditor(section,card)}}));inner.appendChild(actions);body.appendChild(inner);head.addEventListener("click",function(){var open=box.classList.toggle("open");head.setAttribute("aria-expanded",open)});box.appendChild(head);box.appendChild(star);box.appendChild(body);root.appendChild(box)}
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
+  function field(label,name,value,kind,help){var labelEl=el("label",{class:"field",text:label}), input=el(kind==="textarea"?"textarea":kind==="select"?"select":"input",{name:name});if(kind==="select"){["def","thm","ax","other"].forEach(function(v){var o=el("option",{value:v,text:typeLabel(v)});o.selected=v===value;input.appendChild(o)})}else if(kind==="textarea")input.value=value||"";else {input.value=value||"";input.type="text"}labelEl.appendChild(input);if(help){var p=el("p",{class:"small-note",text:help});var w=document.createDocumentFragment();w.appendChild(labelEl);w.appendChild(p);return w}return labelEl}
+  function dialogOpen(title,content,target,deletable){editTarget=target;editorTitle.textContent=title;fields.innerHTML="";fields.appendChild(content);deleteButton.classList.toggle("hidden",!deletable);editor.showModal()}
+  function openBaseEditor(){var f=document.createDocumentFragment();f.appendChild(field("Название базы","title",database.title));f.appendChild(field("Описание","description",database.description,"textarea"));dialogOpen("Настройки базы",f,{kind:"base"},false)}
+  function openSectionEditor(section){var f=document.createDocumentFragment();f.appendChild(field("Название раздела","title",section.title));dialogOpen("Раздел",f,{kind:"section",section:section},true)}
+  function openCardEditor(section,card){var f=document.createDocumentFragment();f.appendChild(field("Название карточки","title",card.title));f.appendChild(field("Тип","type",card.type,"select"));f.appendChild(field("Основной текст","content",card.content,"textarea"));f.appendChild(field("Пояснение / доказательство","note",card.note,"textarea"));var text=(card.images||[]).map(function(i){return [i.url,i.alt,i.caption].join(" | ")}).join("\n");f.appendChild(field("Изображения","images",text,"textarea","По одному на строку: URL | альтернативный текст | подпись. Можно указать только URL."));dialogOpen(card.id?"Изменить карточку":"Новая карточка",f,{kind:"card",section:section,card:card},!!card.id)}
+  function addSection(){var section={id:uid("section"),title:"Новый раздел",sort_order:database.sections.length,cards:[]};database.sections.push(section);saveDraft();openSectionEditor(section)}
+  function addCard(section){var card={id:"",title:"Новая карточка",type:"def",content:"",note:"",images:[],sort_order:section.cards.length};openCardEditor(section,card)}
+  function formValues(){var f=new FormData(document.getElementById("editor-form"));return {title:cleanText(f.get("title")).trim(),description:cleanText(f.get("description")).trim(),type:cleanText(f.get("type")),content:cleanText(f.get("content")).trim(),note:cleanText(f.get("note")).trim(),images:cleanText(f.get("images")).split(/\r?\n/).map(function(line){var a=line.split("|").map(function(x){return x.trim()});return a[0]?{url:a[0],alt:a[1]||"",caption:a.slice(2).join(" | ")||""}:null}).filter(Boolean)}}
+  document.getElementById("editor-form").addEventListener("submit",function(e){e.preventDefault();var v=formValues(), t=editTarget;if(t.kind==="base"){database.title=v.title||"Карточки";database.description=v.description}else if(t.kind==="section"){t.section.title=v.title||"Без названия"}else if(t.kind==="card"){var c=t.card;if(!c.id){c.id=uid("card");t.section.cards.push(c)}c.title=v.title||"Без названия";c.type=v.type||"other";c.content=v.content;c.note=v.note;c.images=v.images}saveDraft();editor.close();build()});
+  deleteButton.addEventListener("click",function(){if(!editTarget)return;if(editTarget.kind==="section"){if(!confirm("Удалить раздел вместе со всеми карточками?"))return;database.sections=database.sections.filter(function(s){return s!==editTarget.section})}else if(editTarget.kind==="card"){if(!confirm("Удалить карточку?"))return;editTarget.section.cards=editTarget.section.cards.filter(function(c){return c!==editTarget.card})}saveDraft();editor.close();build()});
+  document.querySelectorAll("[data-close]").forEach(function(b){b.addEventListener("click",function(){document.getElementById(b.getAttribute("data-close")).close()})});
+  settings.addEventListener("click",function(){editing=!editing;build()});document.getElementById("edit-base").addEventListener("click",openBaseEditor);document.getElementById("add-section").addEventListener("click",addSection);document.getElementById("clear-draft").addEventListener("click",function(){if(confirm("Отменить все локальные изменения этой базы?")){localStorage.removeItem(localDraftKey(database.id));database=clone(originalDatabase);loadDone();build()}});
+  document.getElementById("all").addEventListener("click",function(){allOpen=!allOpen;this.textContent=allOpen?"Скрыть все":"Показать все";build()});document.getElementById("shuffle").addEventListener("click",function(){shuffled=!shuffled;this.textContent=shuffled?"Вернуть порядок":"Перемешать";build()});document.getElementById("reset").addEventListener("click",function(){done={};saveDone();build()});
+  document.getElementById("favorites-filter").addEventListener("click",function(){favoritesOnly=!favoritesOnly;build()});
+  configuredSource().then(function(raw){if(Array.isArray(raw)&&raw.length===1)raw=raw[0];originalDatabase=normalize(raw);database=loadDraft(clone(originalDatabase));loadDone();loadFavorites();build()}).catch(function(error){root.innerHTML="";root.appendChild(el("p",{class:"status error",text:"Не удалось загрузить базу карточек: "+error.message}));console.error(error)});
+  window.CardDatabase={get:function(){return clone(database)},set:function(data){originalDatabase=normalize(data);database=loadDraft(clone(originalDatabase));loadDone();loadFavorites();build()},addCard:addCard};
+}());
+</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tg-photo-grabber.local/schemas/cards-database.schema.json",
+  "title": "Universal Cards Database",
+  "description": "Schema for a database rendered by index.html.",
+  "type": "object",
+  "required": ["schema_version", "id", "title", "sections"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "id": { "$ref": "#/$defs/databaseId" },
+    "title": { "$ref": "#/$defs/nonEmptyText" },
+    "description": { "type": "string" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "subject": { "type": "string" },
+        "language": { "type": "string", "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$" },
+        "audience": { "type": "string" },
+        "content_status": { "type": "string" },
+        "images_policy": { "type": "string" }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/section" }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "databaseId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$"
+    },
+    "nonEmptyText": { "type": "string", "minLength": 1 },
+    "section": {
+      "type": "object",
+      "required": ["id", "title", "sort_order", "cards"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "title": { "$ref": "#/$defs/nonEmptyText" },
+        "sort_order": { "type": "integer", "minimum": 1 },
+        "cards": { "type": "array", "items": { "$ref": "#/$defs/card" } }
+      }
+    },
+    "card": {
+      "type": "object",
+      "required": ["id", "title", "type", "content", "sort_order", "images"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "title": { "$ref": "#/$defs/nonEmptyText" },
+        "type": { "enum": ["def", "thm", "ax", "other"] },
+        "content": { "$ref": "#/$defs/nonEmptyText" },
+        "note": { "type": "string" },
+        "sort_order": { "type": "integer", "minimum": 1 },
+        "images": { "type": "array", "items": { "$ref": "#/$defs/image" } }
+      }
+    },
+    "image": {
+      "type": "object",
+      "required": ["url"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "minLength": 1, "maxLength": 2048 },
+        "alt": { "type": "string" },
+        "caption": { "type": "string" }
+      }
+    }
+  }
+}

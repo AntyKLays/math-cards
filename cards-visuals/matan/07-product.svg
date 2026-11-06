@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" role="img" aria-labelledby="title desc">
+<title id="title">Произведение как площадь</title>
+<desc id="desc">Три вложенных прямоугольника с общей вершиной: площади α1β1, xy, α2β2 возрастают.</desc>
+<defs><marker id="arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#172b42"/></marker><marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1264a3"/></marker><marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#ba3434"/></marker><marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#18734b"/></marker></defs>
+<rect width="900" height="540" fill="#fff"/>
+<g font-family="Arial, DejaVu Sans, sans-serif" stroke-linecap="round" stroke-linejoin="round">
+<text x="450" y="43" font-size="28" fill="#172b42" text-anchor="middle">Произведение как площадь</text>
+<rect x="200" y="140" width="460" height="270" fill="#eef2f6" stroke="#52647a"/><rect x="200" y="194" width="380" height="216" fill="#dcecf9" stroke="#1264a3"/><rect x="200" y="248" width="300" height="162" fill="#acd1ee" stroke="#1264a3"/><text x="350" y="333" font-size="30" fill="#1264a3" text-anchor="middle">α₁β₁</text><text x="541" y="222" font-size="28" fill="#1264a3" text-anchor="middle">xy</text><text x="620" y="177" font-size="24" fill="#172b42" text-anchor="middle">α₂β₂</text><text x="430" y="445" font-size="25" fill="#172b42" text-anchor="middle">α₁ ≤ x ≤ α₂,  β₁ ≤ y ≤ β₂,  α₁, β₁ ≥ 0</text><text x="450" y="492" font-size="23" fill="#52647a" text-anchor="middle">Площадь внутреннего ≤ xy ≤ площадь внешнего прямоугольника.</text>
+</g>
+</svg>
