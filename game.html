@@ -1342,10 +1342,12 @@
       function buildFigure(image) {
         var figure = createEl("figure", "card-figure");
         var img = document.createElement("img");
-        img.src = image.url;
         img.alt = image.alt || image.caption || "Схема к карточке";
         img.loading = "lazy";
         img.draggable = false;
+        img.addEventListener("load", function () {
+          requestAnimationFrame(updateScrollHint);
+        });
         img.addEventListener("click", function (event) {
           event.stopPropagation();
           openLightbox(image);
@@ -1355,7 +1357,9 @@
           img.dataset.failed = "1";
           img.style.display = "none";
           figure.prepend(createEl("div", "img-fallback", "Схема не загрузилась"));
+          requestAnimationFrame(updateScrollHint);
         });
+        img.src = image.url;
         figure.appendChild(img);
         if (image.caption) figure.appendChild(createEl("figcaption", "", image.caption));
         return figure;
@@ -1409,6 +1413,7 @@
         els.cardScroll.scrollTop = 0;
         els.cardBack.classList.remove("can-scroll", "at-bottom");
         requestAnimationFrame(updateScrollHint);
+        setTimeout(updateScrollHint, 250);
         updateProgress();
         updateModeLabels();
         updateActions();
